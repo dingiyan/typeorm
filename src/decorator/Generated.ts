@@ -16,7 +16,7 @@ export function Generated(
         | "increment"
         | "uuid"
         | "rowid"
-        | ((row:ObjectLiteral) => string | number) = "increment",
+        | ((row: ObjectLiteral) => string | number) = "increment",
 ): PropertyDecorator {
     return function (object: Object, propertyName: string) {
         getMetadataArgsStorage().generations.push({

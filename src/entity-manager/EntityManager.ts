@@ -986,7 +986,7 @@ export class EntityManager {
     /**
      * Checks whether any entity exists with the given options.
      */
-    exists<Entity extends ObjectLiteral>(
+    async exists<Entity extends ObjectLiteral>(
         entityClass: EntityTarget<Entity>,
         options?: FindManyOptions<Entity>,
     ): Promise<boolean> {
@@ -1021,7 +1021,7 @@ export class EntityManager {
      * Counts entities that match given options.
      * Useful for pagination.
      */
-    count<Entity extends ObjectLiteral>(
+    async count<Entity extends ObjectLiteral>(
         entityClass: EntityTarget<Entity>,
         options?: FindManyOptions<Entity>,
     ): Promise<number> {
@@ -1039,7 +1039,7 @@ export class EntityManager {
      * Counts entities that match given conditions.
      * Useful for pagination.
      */
-    countBy<Entity extends ObjectLiteral>(
+    async countBy<Entity extends ObjectLiteral>(
         entityClass: EntityTarget<Entity>,
         where: FindOptionsWhere<Entity> | FindOptionsWhere<Entity>[],
         options?: { splitTableFunction?: FindOneOptions["splitTableFunction"] },
@@ -1142,15 +1142,19 @@ export class EntityManager {
             )
         }
 
-        const result = await this.createQueryBuilder(entityClass, metadata.name)
-            .setFindOptions({
-                where,
-                splitTableFunction: options?.splitTableFunction,
-            })
+        const qb = this.createQueryBuilder(entityClass, metadata.name)
+        qb.setFindOptions({
+            where,
+            splitTableFunction: options?.splitTableFunction,
+        })
+
+        const alias = qb.alias
+
+        const result = await qb
             .select(
                 `${fnName}(${this.connection.driver.escape(
-                    column.databaseName,
-                )})`,
+                    alias,
+                )}.${this.connection.driver.escape(column.databaseName)})`,
                 fnName,
             )
             .getRawOne()
@@ -1196,7 +1200,7 @@ export class EntityManager {
      * Also counts all entities that match given conditions,
      * but ignores pagination settings (from and take options).
      */
-    findAndCount<Entity extends ObjectLiteral>(
+    async findAndCount<Entity extends ObjectLiteral>(
         entityClass: EntityTarget<Entity>,
         options?: FindManyOptions<Entity>,
     ): Promise<[Entity[], number]> {
@@ -1215,7 +1219,7 @@ export class EntityManager {
      * Also counts all entities that match given conditions,
      * but ignores pagination settings (from and take options).
      */
-    findAndCountBy<Entity extends ObjectLiteral>(
+    async findAndCountBy<Entity extends ObjectLiteral>(
         entityClass: EntityTarget<Entity>,
         where: FindOptionsWhere<Entity> | FindOptionsWhere<Entity>[],
         options?: { splitTableFunction?: FindOneOptions["splitTableFunction"] },

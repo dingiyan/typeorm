@@ -50,7 +50,7 @@ export class TableColumn {
         | "increment"
         | "rowid"
         | "identity"
-        | ((row:ObjectLiteral) => string | number)
+        | ((row: ObjectLiteral) => string | number)
 
     /**
      * Indicates if column is a primary key.

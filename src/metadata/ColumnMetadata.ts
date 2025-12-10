@@ -114,7 +114,7 @@ export class ColumnMetadata {
         | "uuid"
         | "increment"
         | "rowid"
-        | ((row:ObjectLiteral) => string | number)
+        | ((row: ObjectLiteral) => string | number)
 
     /**
      * Identity column type. Supports only in Postgres 10+.
@@ -126,6 +126,12 @@ export class ColumnMetadata {
      * This feature is not supported by all databases.
      */
     comment?: string
+
+    /**
+     * Indicates if date values use UTC timezone.
+     * Only applies to "date" column type.
+     */
+    utc: boolean = false
 
     /**
      * Default database value.
@@ -392,6 +398,8 @@ export class ColumnMetadata {
             this.isSelect = options.args.options.select
         if (options.args.options.insert !== undefined)
             this.isInsert = options.args.options.insert
+        if (options.args.options.utc !== undefined)
+            this.utc = options.args.options.utc
         if (options.args.options.update !== undefined)
             this.isUpdate = options.args.options.update
         if (options.args.options.readonly !== undefined)
