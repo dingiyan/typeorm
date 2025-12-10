@@ -76,7 +76,7 @@ export abstract class QueryBuilder<Entity extends ObjectLiteral> {
     protected parentQueryBuilder: QueryBuilder<any>
 
     /** 分表函数 */
-    protected splitTableFunction?: (
+    protected shardingTableFunction?: (
         tablePath: string,
         metadata?: EntityMetadata,
     ) => string | null | undefined
@@ -153,14 +153,14 @@ export abstract class QueryBuilder<Entity extends ObjectLiteral> {
     // Public Methods
     // -------------------------------------------------------------------------
 
-    setSplitTableFunction(
+    setShardingTableFunction(
         func?: (
             tablePath: string,
             metadata?: EntityMetadata,
         ) => string | null | undefined,
     ) {
         if (!func) return this
-        this.splitTableFunction = func
+        this.shardingTableFunction = func
         return this
     }
 
@@ -633,7 +633,7 @@ export abstract class QueryBuilder<Entity extends ObjectLiteral> {
         tablePath: string,
         metadata?: EntityMetadata,
     ): string {
-        const splitTableFunc = this.splitTableFunction
+        const splitTableFunc = this.shardingTableFunction
         if (splitTableFunc) {
             const newTablePath = splitTableFunc.call(this, tablePath, metadata)
             if (newTablePath) {

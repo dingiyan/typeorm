@@ -3146,8 +3146,10 @@ export class SelectQueryBuilder<Entity extends ObjectLiteral>
     protected applyFindOptions() {
         // todo: convert relations: string[] to object map to simplify code
         // todo: same with selects
-        if (this.findOptions.splitTableFunction) {
-            this.setSplitTableFunction(this.findOptions.splitTableFunction)
+        if (this.findOptions.shardingTableFunction) {
+            this.setShardingTableFunction(
+                this.findOptions.shardingTableFunction,
+            )
         }
         if (this.expressionMap.mainAlias!.metadata) {
             if (this.findOptions.relationLoadStrategy) {

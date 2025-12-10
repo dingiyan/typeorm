@@ -690,11 +690,13 @@ export class EntityManager {
         entity:
             | QueryDeepPartialEntity<Entity>
             | QueryDeepPartialEntity<Entity>[],
-        options?: { splitTableFunction?: FindOneOptions["splitTableFunction"] },
+        options?: {
+            shardingTableFunction?: FindOneOptions["shardingTableFunction"]
+        },
     ): Promise<InsertResult> {
         return this.createQueryBuilder()
             .insert()
-            .setSplitTableFunction(options?.splitTableFunction)
+            .setShardingTableFunction(options?.shardingTableFunction)
             .into(target)
             .values(entity)
             .execute()
@@ -744,7 +746,7 @@ export class EntityManager {
 
         return this.createQueryBuilder()
             .insert()
-            .setSplitTableFunction(options?.splitTableFunction)
+            .setShardingTableFunction(options?.shardingTableFunction)
             .into(target)
             .values(entities)
             .orUpdate(
@@ -784,7 +786,9 @@ export class EntityManager {
             | ObjectId[]
             | any,
         partialEntity: QueryDeepPartialEntity<Entity>,
-        options?: { splitTableFunction?: FindOneOptions["splitTableFunction"] },
+        options?: {
+            shardingTableFunction?: FindOneOptions["shardingTableFunction"]
+        },
     ): Promise<UpdateResult> {
         // if user passed empty criteria or empty list of criterias, then throw an error
         if (OrmUtils.isCriteriaNullOrEmpty(criteria)) {
@@ -798,14 +802,14 @@ export class EntityManager {
         if (OrmUtils.isPrimitiveCriteria(criteria)) {
             return this.createQueryBuilder()
                 .update(target)
-                .setSplitTableFunction(options?.splitTableFunction)
+                .setShardingTableFunction(options?.shardingTableFunction)
                 .set(partialEntity)
                 .whereInIds(criteria)
                 .execute()
         } else {
             return this.createQueryBuilder()
                 .update(target)
-                .setSplitTableFunction(options?.splitTableFunction)
+                .setShardingTableFunction(options?.shardingTableFunction)
                 .set(partialEntity)
                 .where(criteria)
                 .execute()
@@ -848,7 +852,9 @@ export class EntityManager {
             | ObjectId
             | ObjectId[]
             | any,
-        options?: { splitTableFunction?: FindOneOptions["splitTableFunction"] },
+        options?: {
+            shardingTableFunction?: FindOneOptions["shardingTableFunction"]
+        },
     ): Promise<DeleteResult> {
         // if user passed empty criteria or empty list of criterias, then throw an error
         if (OrmUtils.isCriteriaNullOrEmpty(criteria)) {
@@ -862,14 +868,14 @@ export class EntityManager {
         if (OrmUtils.isPrimitiveCriteria(criteria)) {
             return this.createQueryBuilder()
                 .delete()
-                .setSplitTableFunction(options?.splitTableFunction)
+                .setShardingTableFunction(options?.shardingTableFunction)
                 .from(targetOrEntity)
                 .whereInIds(criteria)
                 .execute()
         } else {
             return this.createQueryBuilder()
                 .delete()
-                .setSplitTableFunction(options?.splitTableFunction)
+                .setShardingTableFunction(options?.shardingTableFunction)
                 .from(targetOrEntity)
                 .where(criteria)
                 .execute()
@@ -908,7 +914,9 @@ export class EntityManager {
             | ObjectId
             | ObjectId[]
             | any,
-        options?: { splitTableFunction?: FindOneOptions["splitTableFunction"] },
+        options?: {
+            shardingTableFunction?: FindOneOptions["shardingTableFunction"]
+        },
     ): Promise<UpdateResult> {
         // if user passed empty criteria or empty list of criterias, then throw an error
         if (OrmUtils.isCriteriaNullOrEmpty(criteria)) {
@@ -922,14 +930,14 @@ export class EntityManager {
         if (OrmUtils.isPrimitiveCriteria(criteria)) {
             return this.createQueryBuilder()
                 .softDelete()
-                .setSplitTableFunction(options?.splitTableFunction)
+                .setShardingTableFunction(options?.shardingTableFunction)
                 .from(targetOrEntity)
                 .whereInIds(criteria)
                 .execute()
         } else {
             return this.createQueryBuilder()
                 .softDelete()
-                .setSplitTableFunction(options?.splitTableFunction)
+                .setShardingTableFunction(options?.shardingTableFunction)
                 .from(targetOrEntity)
                 .where(criteria)
                 .execute()
@@ -955,7 +963,9 @@ export class EntityManager {
             | ObjectId
             | ObjectId[]
             | any,
-        options?: { splitTableFunction?: FindOneOptions["splitTableFunction"] },
+        options?: {
+            shardingTableFunction?: FindOneOptions["shardingTableFunction"]
+        },
     ): Promise<UpdateResult> {
         // if user passed empty criteria or empty list of criterias, then throw an error
         if (OrmUtils.isCriteriaNullOrEmpty(criteria)) {
@@ -969,14 +979,14 @@ export class EntityManager {
         if (OrmUtils.isPrimitiveCriteria(criteria)) {
             return this.createQueryBuilder()
                 .restore()
-                .setSplitTableFunction(options?.splitTableFunction)
+                .setShardingTableFunction(options?.shardingTableFunction)
                 .from(targetOrEntity)
                 .whereInIds(criteria)
                 .execute()
         } else {
             return this.createQueryBuilder()
                 .restore()
-                .setSplitTableFunction(options?.splitTableFunction)
+                .setShardingTableFunction(options?.shardingTableFunction)
                 .from(targetOrEntity)
                 .where(criteria)
                 .execute()
@@ -1006,13 +1016,15 @@ export class EntityManager {
     async existsBy<Entity extends ObjectLiteral>(
         entityClass: EntityTarget<Entity>,
         where: FindOptionsWhere<Entity> | FindOptionsWhere<Entity>[],
-        options?: { splitTableFunction?: FindOneOptions["splitTableFunction"] },
+        options?: {
+            shardingTableFunction?: FindOneOptions["shardingTableFunction"]
+        },
     ): Promise<boolean> {
         const metadata = this.connection.getMetadata(entityClass)
         return this.createQueryBuilder(entityClass, metadata.name)
             .setFindOptions({
                 where,
-                splitTableFunction: options?.splitTableFunction,
+                shardingTableFunction: options?.shardingTableFunction,
             })
             .getExists()
     }
@@ -1042,13 +1054,15 @@ export class EntityManager {
     async countBy<Entity extends ObjectLiteral>(
         entityClass: EntityTarget<Entity>,
         where: FindOptionsWhere<Entity> | FindOptionsWhere<Entity>[],
-        options?: { splitTableFunction?: FindOneOptions["splitTableFunction"] },
+        options?: {
+            shardingTableFunction?: FindOneOptions["shardingTableFunction"]
+        },
     ): Promise<number> {
         const metadata = this.connection.getMetadata(entityClass)
         return this.createQueryBuilder(entityClass, metadata.name)
             .setFindOptions({
                 where,
-                splitTableFunction: options?.splitTableFunction,
+                shardingTableFunction: options?.shardingTableFunction,
             })
             .getCount()
     }
@@ -1060,7 +1074,9 @@ export class EntityManager {
         entityClass: EntityTarget<Entity>,
         columnName: PickKeysByType<Entity, number>,
         where?: FindOptionsWhere<Entity> | FindOptionsWhere<Entity>[],
-        options?: { splitTableFunction?: FindOneOptions["splitTableFunction"] },
+        options?: {
+            shardingTableFunction?: FindOneOptions["shardingTableFunction"]
+        },
     ): Promise<number | null> {
         return this.callAggregateFun(
             entityClass,
@@ -1078,7 +1094,9 @@ export class EntityManager {
         entityClass: EntityTarget<Entity>,
         columnName: PickKeysByType<Entity, number>,
         where?: FindOptionsWhere<Entity> | FindOptionsWhere<Entity>[],
-        options?: { splitTableFunction?: FindOneOptions["splitTableFunction"] },
+        options?: {
+            shardingTableFunction?: FindOneOptions["shardingTableFunction"]
+        },
     ): Promise<number | null> {
         return this.callAggregateFun(
             entityClass,
@@ -1096,7 +1114,9 @@ export class EntityManager {
         entityClass: EntityTarget<Entity>,
         columnName: PickKeysByType<Entity, number>,
         where?: FindOptionsWhere<Entity> | FindOptionsWhere<Entity>[],
-        options?: { splitTableFunction?: FindOneOptions["splitTableFunction"] },
+        options?: {
+            shardingTableFunction?: FindOneOptions["shardingTableFunction"]
+        },
     ): Promise<number | null> {
         return this.callAggregateFun(
             entityClass,
@@ -1114,7 +1134,9 @@ export class EntityManager {
         entityClass: EntityTarget<Entity>,
         columnName: PickKeysByType<Entity, number>,
         where?: FindOptionsWhere<Entity> | FindOptionsWhere<Entity>[],
-        options?: { splitTableFunction?: FindOneOptions["splitTableFunction"] },
+        options?: {
+            shardingTableFunction?: FindOneOptions["shardingTableFunction"]
+        },
     ): Promise<number | null> {
         return this.callAggregateFun(
             entityClass,
@@ -1130,7 +1152,9 @@ export class EntityManager {
         fnName: "SUM" | "AVG" | "MIN" | "MAX",
         columnName: PickKeysByType<Entity, number>,
         where: FindOptionsWhere<Entity> | FindOptionsWhere<Entity>[] = {},
-        options?: { splitTableFunction?: FindOneOptions["splitTableFunction"] },
+        options?: {
+            shardingTableFunction?: FindOneOptions["shardingTableFunction"]
+        },
     ): Promise<number | null> {
         const metadata = this.connection.getMetadata(entityClass)
         const column = metadata.columns.find(
@@ -1145,7 +1169,7 @@ export class EntityManager {
         const qb = this.createQueryBuilder(entityClass, metadata.name)
         qb.setFindOptions({
             where,
-            splitTableFunction: options?.splitTableFunction,
+            shardingTableFunction: options?.shardingTableFunction,
         })
 
         const alias = qb.alias
@@ -1184,7 +1208,9 @@ export class EntityManager {
     async findBy<Entity extends ObjectLiteral>(
         entityClass: EntityTarget<Entity>,
         where: FindOptionsWhere<Entity> | FindOptionsWhere<Entity>[],
-        options?: { splitTableFunction?: FindOneOptions["splitTableFunction"] },
+        options?: {
+            shardingTableFunction?: FindOneOptions["shardingTableFunction"]
+        },
     ): Promise<Entity[]> {
         const metadata = this.connection.getMetadata(entityClass)
         return this.createQueryBuilder<Entity>(
@@ -1222,7 +1248,9 @@ export class EntityManager {
     async findAndCountBy<Entity extends ObjectLiteral>(
         entityClass: EntityTarget<Entity>,
         where: FindOptionsWhere<Entity> | FindOptionsWhere<Entity>[],
-        options?: { splitTableFunction?: FindOneOptions["splitTableFunction"] },
+        options?: {
+            shardingTableFunction?: FindOneOptions["shardingTableFunction"]
+        },
     ): Promise<[Entity[], number]> {
         const metadata = this.connection.getMetadata(entityClass)
         return this.createQueryBuilder<Entity>(
@@ -1246,7 +1274,9 @@ export class EntityManager {
     async findByIds<Entity extends ObjectLiteral>(
         entityClass: EntityTarget<Entity>,
         ids: any[],
-        options?: { splitTableFunction?: FindOneOptions["splitTableFunction"] },
+        options?: {
+            shardingTableFunction?: FindOneOptions["shardingTableFunction"]
+        },
     ): Promise<Entity[]> {
         // if no ids passed, no need to execute a query - just return an empty array of values
         if (!ids.length) return Promise.resolve([])
@@ -1257,7 +1287,7 @@ export class EntityManager {
             metadata.name,
         )
             .andWhereInIds(ids)
-            .setSplitTableFunction(options?.splitTableFunction)
+            .setShardingTableFunction(options?.shardingTableFunction)
             .getMany()
     }
 
@@ -1299,7 +1329,9 @@ export class EntityManager {
     async findOneBy<Entity extends ObjectLiteral>(
         entityClass: EntityTarget<Entity>,
         where: FindOptionsWhere<Entity> | FindOptionsWhere<Entity>[],
-        options?: { splitTableFunction?: FindOneOptions["splitTableFunction"] },
+        options?: {
+            shardingTableFunction?: FindOneOptions["shardingTableFunction"]
+        },
     ): Promise<Entity | null> {
         const metadata = this.connection.getMetadata(entityClass)
 
@@ -1308,7 +1340,7 @@ export class EntityManager {
             .setFindOptions({
                 where,
                 take: 1,
-                splitTableFunction: options?.splitTableFunction,
+                shardingTableFunction: options?.shardingTableFunction,
             })
             .getOne()
     }
@@ -1326,7 +1358,9 @@ export class EntityManager {
     async findOneById<Entity extends ObjectLiteral>(
         entityClass: EntityTarget<Entity>,
         id: number | string | Date | ObjectId,
-        options?: { splitTableFunction?: FindOneOptions["splitTableFunction"] },
+        options?: {
+            shardingTableFunction?: FindOneOptions["shardingTableFunction"]
+        },
     ): Promise<Entity | null> {
         const metadata = this.connection.getMetadata(entityClass)
 
@@ -1334,7 +1368,7 @@ export class EntityManager {
         return this.createQueryBuilder<Entity>(entityClass, metadata.name)
             .setFindOptions({
                 take: 1,
-                splitTableFunction: options?.splitTableFunction,
+                shardingTableFunction: options?.shardingTableFunction,
             })
             .whereInIds(metadata.ensureEntityIdMap(id))
             .getOne()
@@ -1367,7 +1401,9 @@ export class EntityManager {
     async findOneByOrFail<Entity extends ObjectLiteral>(
         entityClass: EntityTarget<Entity>,
         where: FindOptionsWhere<Entity> | FindOptionsWhere<Entity>[],
-        options?: { splitTableFunction?: FindOneOptions["splitTableFunction"] },
+        options?: {
+            shardingTableFunction?: FindOneOptions["shardingTableFunction"]
+        },
     ): Promise<Entity> {
         return this.findOneBy<Entity>(entityClass as any, where, options).then(
             (value) => {
@@ -1389,14 +1425,16 @@ export class EntityManager {
      */
     async clear<Entity>(
         entityClass: EntityTarget<Entity>,
-        options?: { splitTableFunction?: FindOneOptions["splitTableFunction"] },
+        options?: {
+            shardingTableFunction?: FindOneOptions["shardingTableFunction"]
+        },
     ): Promise<void> {
         const metadata = this.connection.getMetadata(entityClass)
         const queryRunner =
             this.queryRunner || this.connection.createQueryRunner()
         try {
             return await queryRunner.clearTable(
-                options?.splitTableFunction?.call(
+                options?.shardingTableFunction?.call(
                     {} as any,
                     metadata.tablePath,
                     metadata,
@@ -1412,7 +1450,9 @@ export class EntityManager {
      */
     async truncate<Entity>(
         entityClass: EntityTarget<Entity>,
-        options?: { splitTableFunction?: FindOneOptions["splitTableFunction"] },
+        options?: {
+            shardingTableFunction?: FindOneOptions["shardingTableFunction"]
+        },
     ): Promise<void> {
         return this.clear(entityClass, options)
     }
@@ -1425,7 +1465,9 @@ export class EntityManager {
         conditions: any,
         propertyPath: string,
         value: number | string,
-        options?: { splitTableFunction?: FindOneOptions["splitTableFunction"] },
+        options?: {
+            shardingTableFunction?: FindOneOptions["shardingTableFunction"]
+        },
     ): Promise<UpdateResult> {
         const metadata = this.connection.getMetadata(entityClass)
         const column = metadata.findColumnWithPropertyPath(propertyPath)
@@ -1450,7 +1492,7 @@ export class EntityManager {
 
         return this.createQueryBuilder<Entity>(entityClass as any, "entity")
             .update(entityClass)
-            .setSplitTableFunction(options?.splitTableFunction)
+            .setShardingTableFunction(options?.shardingTableFunction)
             .set(values)
             .where(conditions)
             .execute()
@@ -1464,7 +1506,9 @@ export class EntityManager {
         conditions: any,
         propertyPath: string,
         value: number | string,
-        options?: { splitTableFunction?: FindOneOptions["splitTableFunction"] },
+        options?: {
+            shardingTableFunction?: FindOneOptions["shardingTableFunction"]
+        },
     ): Promise<UpdateResult> {
         const metadata = this.connection.getMetadata(entityClass)
         const column = metadata.findColumnWithPropertyPath(propertyPath)
@@ -1489,7 +1533,7 @@ export class EntityManager {
 
         return this.createQueryBuilder<Entity>(entityClass as any, "entity")
             .update(entityClass)
-            .setSplitTableFunction(options?.splitTableFunction)
+            .setShardingTableFunction(options?.shardingTableFunction)
             .set(values)
             .where(conditions)
             .execute()

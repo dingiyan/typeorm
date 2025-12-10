@@ -19,5 +19,5 @@ export interface UpsertOptions<Entity> extends InsertOrUpdateOptions {
      * If none provided, it will use the default for the database (first one in the list)
      */
     upsertType?: UpsertType
-    splitTableFunction?: FindOneOptions["splitTableFunction"]
+    shardingTableFunction?: FindOneOptions["shardingTableFunction"]
 }

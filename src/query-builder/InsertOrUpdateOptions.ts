@@ -16,7 +16,7 @@ export type InsertOrUpdateOptions = {
     upsertType?: UpsertType
 
     /** 分表模式，处理返回新表名 */
-    splitTableFunction?: <T extends ObjectLiteral>(
+    shardingTableFunction?: <T extends ObjectLiteral>(
         this: QueryBuilder<T>,
         tablePath: string,
         metadata?: EntityMetadata,

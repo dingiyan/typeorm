@@ -47,7 +47,7 @@ describe("MSSQL Ding Functions", () => {
         // 连接任意表或实体，可以在实体上没有关联关系。
         const data = await dataSource
             .createQueryBuilder(User, "user")
-            .setSplitTableFunction((tablePath, meta) => {
+            .setShardingTableFunction((tablePath, meta) => {
                 console.log(
                     tablePath,
                     meta?.tableName,
