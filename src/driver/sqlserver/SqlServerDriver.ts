@@ -128,6 +128,7 @@ export class SqlServerDriver implements Driver {
         "char",
         "varchar",
         "text",
+        "longtext",
         "nchar",
         "nvarchar",
         "ntext",
@@ -647,7 +648,11 @@ export class SqlServerDriver implements Driver {
     }): string {
         if (column.type === Number || column.type === "integer") {
             return "int"
-        } else if (column.type === String) {
+        } else if (
+            column.type === String ||
+            column.type === "text" ||
+            column.type === "longtext"
+        ) {
             return "nvarchar"
         } else if (column.type === Date) {
             return "datetime"
@@ -738,7 +743,9 @@ export class SqlServerDriver implements Driver {
         if (
             column.type === "simple-json" ||
             column.type === "json" ||
-            column.type === "simple-array"
+            column.type === "simple-array" ||
+            column.type === "text" ||
+            column.type === "longtext"
         )
             return "max"
         return ""
