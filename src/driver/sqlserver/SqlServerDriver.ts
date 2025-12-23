@@ -29,6 +29,8 @@ import { InstanceChecker } from "../../util/InstanceChecker"
 import { UpsertType } from "../types/UpsertType"
 import { FindOperator } from "../../find-options/FindOperator"
 
+import type * as mssql from "mssql"
+
 /**
  * Organizes communication with SQL Server DBMS.
  */
@@ -45,7 +47,7 @@ export class SqlServerDriver implements Driver {
     /**
      * SQL Server library.
      */
-    mssql: any
+    mssql: typeof mssql
 
     /**
      * Pool for master database.

@@ -28,6 +28,7 @@ import { MetadataTableType } from "../types/MetadataTableType"
 import { ReplicationMode } from "../types/ReplicationMode"
 import { MssqlParameter } from "./MssqlParameter"
 import { SqlServerDriver } from "./SqlServerDriver"
+import { IResult } from "mssql"
 
 /**
  * Runs queries on a single SQL Server database connection.
@@ -243,46 +244,51 @@ export class SqlServerQueryRunner
             }
             const queryStartTime = Date.now()
 
-            const raw = await new Promise<any>((ok, fail) => {
-                request.query(query, (err: any, raw: any) => {
-                    // log slow queries if maxQueryExecution time is set
-                    const maxQueryExecutionTime =
-                        this.driver.options.maxQueryExecutionTime
-                    const queryEndTime = Date.now()
-                    const queryExecutionTime = queryEndTime - queryStartTime
+            const raw = await new Promise<IResult<any> | undefined>(
+                (ok, fail) => {
+                    request.query(query, (err: any, raw) => {
+                        // log slow queries if maxQueryExecution time is set
+                        const maxQueryExecutionTime =
+                            this.driver.options.maxQueryExecutionTime
+                        const queryEndTime = Date.now()
+                        const queryExecutionTime = queryEndTime - queryStartTime
 
-                    this.broadcaster.broadcastAfterQueryEvent(
-                        broadcasterResult,
-                        query,
-                        parameters,
-                        true,
-                        queryExecutionTime,
-                        raw,
-                        undefined,
-                    )
-
-                    if (
-                        maxQueryExecutionTime &&
-                        queryExecutionTime > maxQueryExecutionTime
-                    ) {
-                        this.driver.connection.logger.logQuerySlow(
-                            queryExecutionTime,
+                        this.broadcaster.broadcastAfterQueryEvent(
+                            broadcasterResult,
                             query,
                             parameters,
-                            this,
+                            true,
+                            queryExecutionTime,
+                            raw,
+                            undefined,
                         )
-                    }
 
-                    if (err) {
-                        fail(new QueryFailedError(query, parameters, err))
-                    }
+                        if (
+                            maxQueryExecutionTime &&
+                            queryExecutionTime > maxQueryExecutionTime
+                        ) {
+                            this.driver.connection.logger.logQuerySlow(
+                                queryExecutionTime,
+                                query,
+                                parameters,
+                                this,
+                            )
+                        }
 
-                    ok(raw)
-                })
-            })
+                        if (err) {
+                            fail(new QueryFailedError(query, parameters, err))
+                        }
+
+                        ok(raw)
+                    })
+                },
+            )
 
             const result = new QueryResult()
 
+            //   if (raw?.hasOwnProperty("recordsets")) {
+            //     result.records = raw.recordsets as any
+            //   } else
             if (raw?.hasOwnProperty("recordset")) {
                 result.records = raw.recordset
             }
@@ -295,10 +301,10 @@ export class SqlServerQueryRunner
             switch (queryType) {
                 case "DELETE":
                     // for DELETE query additionally return number of affected rows
-                    result.raw = [raw.recordset, raw.rowsAffected[0]]
+                    result.raw = [raw?.recordset, raw?.rowsAffected[0]]
                     break
                 default:
-                    result.raw = raw.recordset
+                    result.raw = raw?.recordset
             }
 
             if (useStructuredResult) {
@@ -337,8 +343,8 @@ export class SqlServerQueryRunner
     async stream(
         query: string,
         parameters?: any[],
-        onEnd?: Function,
-        onError?: Function,
+        onEnd?: (...args: any[]) => void,
+        onError?: (...args: any[]) => void,
     ): Promise<ReadStream> {
         if (this.isReleased) throw new QueryRunnerAlreadyReleasedError()
 
@@ -366,7 +372,8 @@ export class SqlServerQueryRunner
             })
         }
 
-        request.query(query)
+        // for ignore ts  Promises must be awaited error.
+        ;(request as any).query(query)
 
         const streamRequest = request.toReadableStream()
 
@@ -392,7 +399,7 @@ export class SqlServerQueryRunner
             streamRequest.on("error", onError)
         }
 
-        return streamRequest
+        return streamRequest as any
     }
 
     /**
@@ -4197,9 +4204,9 @@ export class SqlServerQueryRunner
                 ) {
                     return this.driver.mssql.Text
                 }
-                return this.driver.mssql.Ntext
+                return this.driver.mssql.NText
             case "ntext":
-                return this.driver.mssql.Ntext
+                return this.driver.mssql.NText
             case "varchar":
                 if (
                     this.driver.options.options
@@ -4237,9 +4244,9 @@ export class SqlServerQueryRunner
             case "udt":
                 return this.driver.mssql.UDT
             case "rowversion":
-                return this.driver.mssql.RowVersion
+                return (this.driver.mssql as any).RowVersion // TODO: check if this is correct
             case "vector":
-                return this.driver.mssql.Ntext
+                return this.driver.mssql.NText
         }
     }
 
