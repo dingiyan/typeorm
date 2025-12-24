@@ -40,6 +40,7 @@ import { ObjectLiteral } from "../common/ObjectLiteral"
 import { PickKeysByType } from "../common/PickKeysByType"
 import { buildSqlTag } from "../util/SqlTagUtils"
 import { OrmUtils } from "../util/OrmUtils"
+import { QueryResult } from "../query-runner/QueryResult"
 
 /**
  * Entity manager supposed to work with any entity, automatically find its repository and call its methods,
@@ -176,6 +177,13 @@ export class EntityManager {
      */
     async query<T = any>(query: string, parameters?: any[]): Promise<T> {
         return this.connection.query(query, parameters, this.queryRunner)
+    }
+    /** exec raw sql same with ds.query2 */
+    async query2<T = any>(
+        query: string,
+        parameters?: Record<string, any>,
+    ): Promise<QueryResult<T>> {
+        return this.connection.query2(query, parameters, this.queryRunner)
     }
 
     /**

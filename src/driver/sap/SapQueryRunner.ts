@@ -270,6 +270,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
             }
 
             result.raw = raw
+            result.rawResult = raw
 
             if (isInsertQuery) {
                 const lastIdQuery = `SELECT CURRENT_IDENTITY_VALUE() FROM "SYS"."DUMMY"`

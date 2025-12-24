@@ -245,7 +245,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
                 )
 
             const result = new QueryResult()
-
+            result.rawResult = raw
             result.raw =
                 raw.rows ||
                 raw.outBinds ||

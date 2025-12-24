@@ -286,6 +286,7 @@ export class SqlServerQueryRunner
 
             const result = new QueryResult()
 
+            result.rawResult = raw
             //   if (raw?.hasOwnProperty("recordsets")) {
             //     result.records = raw.recordsets as any
             //   } else

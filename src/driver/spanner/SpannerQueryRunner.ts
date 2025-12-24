@@ -238,6 +238,7 @@ export class SpannerQueryRunner extends BaseQueryRunner implements QueryRunner {
                 )
 
             const result = new QueryResult()
+            result.rawResult = rawResult
 
             result.raw = rawResult
             result.records = rawResult ? rawResult[0] : []

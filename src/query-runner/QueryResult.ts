@@ -8,6 +8,11 @@ export class QueryResult<T = any> {
     raw: any
 
     /**
+     * Raw data returned by driver, and no change
+     */
+    rawResult?: any
+
+    /**
      * Rows
      */
     records: T[] = []

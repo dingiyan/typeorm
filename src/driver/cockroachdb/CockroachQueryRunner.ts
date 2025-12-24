@@ -308,7 +308,7 @@ export class CockroachQueryRunner
             }
 
             const result = new QueryResult()
-
+            result.rawResult = raw
             if (raw.hasOwnProperty("rowCount")) {
                 result.affected = raw.rowCount
             }

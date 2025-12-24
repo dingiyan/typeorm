@@ -176,6 +176,7 @@ export class AuroraPostgresQueryRunner
         const raw = await this.client.query(query, parameters)
 
         const result = new QueryResult()
+        result.rawResult = raw
 
         result.raw = raw
 

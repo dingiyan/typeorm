@@ -42,6 +42,7 @@ import { DriverUtils } from "../driver/DriverUtils"
 import { InstanceChecker } from "../util/InstanceChecker"
 import { ObjectLiteral } from "../common/ObjectLiteral"
 import { buildSqlTag } from "../util/SqlTagUtils"
+import { QueryResult } from "../query-runner/QueryResult"
 
 registerQueryBuilders()
 
@@ -528,6 +529,7 @@ export class DataSource {
         query: string,
         parameters?: any[],
         queryRunner?: QueryRunner,
+        useStructuredResult?: boolean,
     ): Promise<T> {
         if (InstanceChecker.isMongoEntityManager(this.manager))
             throw new TypeORMError(`Queries aren't supported by MongoDB.`)
@@ -539,6 +541,37 @@ export class DataSource {
 
         try {
             return await usedQueryRunner.query(query, parameters) // await is needed here because we are using finally
+        } finally {
+            if (!queryRunner) await usedQueryRunner.release()
+        }
+    }
+
+    /**
+     * Executes raw SQL query and returns QueryResult obj , it's with raw database results.
+     * the parameters is :value format object.
+     *
+     * @see [Official docs](https://typeorm.io/data-source-api) for examples.
+     */
+    async query2<T = any>(
+        query: string,
+        parameters?: Record<string, any>,
+        queryRunner?: QueryRunner,
+    ): Promise<QueryResult<T>> {
+        if (InstanceChecker.isMongoEntityManager(this.manager))
+            throw new TypeORMError(`Queries aren't supported by MongoDB.`)
+
+        if (queryRunner && queryRunner.isReleased)
+            throw new QueryRunnerProviderAlreadyReleasedError()
+
+        const usedQueryRunner = queryRunner || this.createQueryRunner()
+
+        try {
+            const [sql, params2] = this.driver.escapeQueryWithParameters(
+                query,
+                parameters || {},
+                {},
+            )
+            return await usedQueryRunner.query(sql, params2, true) // await is needed here because we are using finally
         } finally {
             if (!queryRunner) await usedQueryRunner.release()
         }

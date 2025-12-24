@@ -137,8 +137,10 @@ export class SqliteQueryRunner extends AbstractSqliteQueryRunner {
 
                         if (isInsertQuery) {
                             result.raw = this["lastID"]
+                            result.rawResult = this["lastID"]
                         } else {
                             result.raw = rows
+                            result.rawResult = rows
                         }
 
                         broadcaster.broadcastAfterQueryEvent(

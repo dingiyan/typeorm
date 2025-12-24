@@ -97,6 +97,7 @@ export class ReactNativeQueryRunner extends AbstractSqliteQueryRunner {
                             await Promise.all(broadcasterResult.promises)
 
                         const result = new QueryResult()
+                        result.rawResult = raw
 
                         if (raw?.hasOwnProperty("rowsAffected")) {
                             result.affected = raw.rowsAffected

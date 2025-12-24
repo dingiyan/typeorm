@@ -72,6 +72,8 @@ export class ExpoQueryRunner extends AbstractSqliteQueryRunner {
             }
 
             const result = new QueryResult()
+            result.rawResult = rawResult
+
             result.affected = rawResult.changes
             result.records = await rawResult.getAllAsync()
             result.raw = query.startsWith("INSERT INTO")

@@ -262,6 +262,7 @@ export class MysqlQueryRunner extends BaseQueryRunner implements QueryRunner {
                         const result = new QueryResult()
 
                         result.raw = raw
+                        result.rawResult = raw
 
                         try {
                             result.records = Array.from(raw)

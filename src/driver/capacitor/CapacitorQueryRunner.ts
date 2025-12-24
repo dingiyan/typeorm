@@ -88,6 +88,7 @@ export class CapacitorQueryRunner extends AbstractSqliteQueryRunner {
             }
 
             const result = new QueryResult()
+            result.rawResult = raw
 
             if (raw?.hasOwnProperty("values")) {
                 result.raw = raw.values

@@ -281,6 +281,7 @@ export class PostgresQueryRunner
 
             const result = new QueryResult()
             if (raw) {
+                result.rawResult = raw
                 if (raw.hasOwnProperty("rows")) {
                     result.records = raw.rows
                 }

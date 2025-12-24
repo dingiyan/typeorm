@@ -105,6 +105,7 @@ export class BetterSqlite3QueryRunner extends AbstractSqliteQueryRunner {
                 const raw = stmt.all(...parameters)
 
                 result.raw = raw
+                result.rawResult = raw
 
                 if (Array.isArray(raw)) {
                     result.records = raw

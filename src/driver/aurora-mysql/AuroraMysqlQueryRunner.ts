@@ -167,6 +167,7 @@ export class AuroraMysqlQueryRunner
         const result = new QueryResult()
 
         result.raw = raw
+        result.rawResult = raw
 
         if (raw?.hasOwnProperty("records") && Array.isArray(raw.records)) {
             result.records = raw.records

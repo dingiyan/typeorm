@@ -99,6 +99,7 @@ export class CordovaQueryRunner extends AbstractSqliteQueryRunner {
             }
 
             const result = new QueryResult()
+            result.rawResult = raw
 
             if (query.substr(0, 11) === "INSERT INTO") {
                 result.raw = raw.insertId

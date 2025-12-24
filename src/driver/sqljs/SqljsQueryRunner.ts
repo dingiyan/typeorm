@@ -137,7 +137,7 @@ export class SqljsQueryRunner extends AbstractSqliteQueryRunner {
             )
 
             const result = new QueryResult()
-
+            result.rawResult = records
             result.affected = databaseConnection.getRowsModified()
             result.records = records
             result.raw = records

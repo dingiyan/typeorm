@@ -91,6 +91,7 @@ export class NativescriptQueryRunner extends AbstractSqliteQueryRunner {
 
                 const result = new QueryResult()
                 result.raw = raw
+                result.rawResult = raw
 
                 if (!isInsertQuery && Array.isArray(raw)) {
                     result.records = raw
